@@ -20,10 +20,10 @@ Twitter Bot that you can schedule your tweets
 ## To change tweet frequency
 - Change the value of tweet_frequency variable inside configurations.py (line 10 of configurations.py)
 
-***If you do not want to shuffle hashtags and multiply tweets***/n
+### If you do not want to shuffle hashtags and multiply tweets
 Please put hashtags in one line inside hashtags.txt. Eg: #hashtag1 #hashtag2 #hashtag3
 
-***If you want to shuffle hashtags and multiply tweets***/n
+### If you want to shuffle hashtags and multiply tweets
 Please put hashtags in multiple lines inside hashtags.txt. Eg:
 #hashtag1
 #hashtag2
