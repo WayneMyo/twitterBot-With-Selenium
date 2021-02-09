@@ -32,6 +32,8 @@ if have_tweet:
 
     if have_hashtag:
         hashtags = read_hashtags_response['data']
+        print("HASHTAGS COUNT", len(hashtags))
+
         hashtag_combinations = []
             
         for i in range(len(hashtags)):
@@ -67,6 +69,6 @@ if have_tweet:
                 twitterService.logout(browser)
                 browser.close()
                 sys.exit("PROGRAM ENDED!")
-                    
+        
     
                 

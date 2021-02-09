@@ -4,6 +4,7 @@ from selenium.webdriver.common import keys #pip install webdriver-manager
 from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
 import time
+import os
 
 import configurations
 #import bot file name
@@ -138,6 +139,21 @@ class Twitter_Service(object):
         try:
             browser.find_element_by_xpath("//a[@data-testid='SideNav_NewTweet_Button']").click()
             time.sleep(2)
+
+            img = tweet.split('|')[0]
+            tweet = tweet.split('|')[1]
+
+            if(img!=''):
+                files = []
+                for i in os.listdir(configurations.img_path):
+                    if os.path.isfile(os.path.join(configurations.img_path,i)) and img in i:
+                        files.append(i)
+                
+                for file_ in files:
+                    file_upload = browser.find_element_by_xpath("//input[@type='file']")
+                    browser.execute_script("arguments[0].style.display = 'block';", file_upload)
+                    file_upload.send_keys(configurations.img_path + file_)
+
             browser.find_element_by_xpath("//div[@role='textbox']").send_keys(tweet)
             time.sleep(2)
             browser.find_element_by_class_name("notranslate").send_keys(keys.Keys.ENTER)
