@@ -1,12 +1,9 @@
 # Import Libraries and Service
 from services import Twitter_Service
 from playsound import playsound #pip install playsound
-from random import shuffle
 import subprocess
-import datetime
 import time
 import sys
-import re
 
 import configurations
 

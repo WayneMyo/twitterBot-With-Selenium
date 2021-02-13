@@ -1,5 +1,6 @@
 # Import Libraries and Service
 from services import Twitter_Service
+from random import shuffle
 import subprocess
 import configurations
 
@@ -33,6 +34,8 @@ if have_tweet:
             tweet = tweet.strip("\n") + " "
             for hashtag in hashtag_combinations:
                 hashtagged_tweets.append(tweet + hashtag)
+
+        shuffle(hashtagged_tweets)
 
         print("HASHTAGGED TWEETS COUNT", len(hashtagged_tweets))
 
