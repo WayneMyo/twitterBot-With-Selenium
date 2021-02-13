@@ -1,3 +1,0 @@
-a|Tweet 1
-b|Tweet 2
-c|Tweet 3

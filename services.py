@@ -3,6 +3,7 @@ from selenium import common
 from selenium.webdriver.common import keys #pip install webdriver-manager
 from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
+import random
 import time
 import os
 
@@ -72,7 +73,7 @@ class Twitter_Service(object):
     # Write data to file
     def write_file(self, filename, data):
         with open(filename, 'w') as fout:
-                fout.writelines(data)
+                fout.writelines("%s\n" % datapoint for datapoint in data)
         return True
 
     # Combine and rotate hashtags
@@ -81,7 +82,8 @@ class Twitter_Service(object):
         rotated_hashtag_string = ""
         
         for item in rotated_list:
-            rotated_hashtag_string += " " + item
+            item = item.strip("\n")
+            rotated_hashtag_string += item + " "
         
         return rotated_hashtag_string
 
@@ -134,7 +136,8 @@ class Twitter_Service(object):
 
     # Post tweets
     def post_tweets(self, browser, hashtagged_tweets):
-        tweet = hashtagged_tweets[0]
+        random_int = random.randint(0,len(hashtagged_tweets)-1)
+        tweet = hashtagged_tweets[random_int]
 
         try:
             browser.find_element_by_xpath("//a[@data-testid='SideNav_NewTweet_Button']").click()

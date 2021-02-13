@@ -2,6 +2,8 @@
 from services import Twitter_Service
 from playsound import playsound #pip install playsound
 from random import shuffle
+import subprocess
+import datetime
 import time
 import sys
 import re
@@ -9,66 +11,50 @@ import re
 import configurations
 
 twitterService = Twitter_Service()
+filename = configurations.init_file
 
-# Initiate Browser
-browser = twitterService.initiate_browser()
+check_data_response = twitterService.read_file(configurations.hashtagged_tweets_file)
+data_exists = check_data_response['have_data']
 
-# Open Twitter Website
-twitterService.open_twitter(browser)
+if data_exists:
+    # Initiate Browser
+    browser = twitterService.initiate_browser()
 
-# Fill credentials and login
-twitterService.login(browser)
+    # Open Twitter Website
+    twitterService.open_twitter(browser)
 
-read_tweets_response = twitterService.read_file(configurations.tweets_file)
-have_tweet = read_tweets_response['have_data']
+    # Fill credentials and login
+    twitterService.login(browser)
 
-if have_tweet:
+    have_hashtagged_tweets = True
 
-    tweets = read_tweets_response['data']
-    print("TWEETS COUNT", len(tweets))
-
-    read_hashtags_response = twitterService.read_file(configurations.hashtags_file)
-    have_hashtag = read_hashtags_response['have_data']
-
-    if have_hashtag:
-        hashtags = read_hashtags_response['data']
-        print("HASHTAGS COUNT", len(hashtags))
-
-        hashtag_combinations = []
+    while (have_hashtagged_tweets):
+        read_hashtagged_tweets_response = twitterService.read_file(configurations.hashtagged_tweets_file)
+        have_hashtagged_tweets = read_hashtagged_tweets_response['have_data']
             
-        for i in range(len(hashtags)):
-            hashtag_combinations.append(twitterService.rotate_hashtags(hashtags, i))
+        if have_hashtagged_tweets:
+            hashtagged_tweets = read_hashtagged_tweets_response['data']
+            twitterService.post_tweets(browser, hashtagged_tweets)
+                
+            hashtagged_tweets = hashtagged_tweets[1:]
+                
+            for i, tweet in enumerate(hashtagged_tweets):
+                tweet = tweet.strip("\n")
+                hashtagged_tweets[i] = tweet
+                
+            twitterService.write_file(configurations.hashtagged_tweets_file, hashtagged_tweets)
+                
+            time.sleep(configurations.tweet_frequency)
 
-        print("HASHTAG_COMBINATIONS COUNT", len(hashtag_combinations))
-        
-        hashtagged_tweets = []
+        else:
+            print("MISSION PASSED! RESPECT +")
+            playsound(configurations.music_file)
+            time.sleep(1)
+                
+            twitterService.logout(browser)
+            browser.close()
+            sys.exit("PROGRAM ENDED!")
 
-        for tweet in tweets:
-            for hashtag in hashtag_combinations:
-                hashtagged_tweets.append(tweet + hashtag)
-
-        shuffle(hashtagged_tweets)
-
-        print("HASHTAGGED_TWEETS COUNT", len(hashtagged_tweets))
-
-        have_hashtagged_tweets = True
-
-        while (have_hashtagged_tweets):
-            have_hashtagged_tweets = not(not hashtagged_tweets)
-            
-            if have_hashtagged_tweets:
-                twitterService.post_tweets(browser, hashtagged_tweets)
-                hashtagged_tweets = hashtagged_tweets[1:]
-                time.sleep(configurations.tweet_frequency)
-
-            else:
-                print("MISSION PASSED! RESPECT +")
-                playsound(configurations.music_file)
-                time.sleep(1)
-        
-                twitterService.logout(browser)
-                browser.close()
-                sys.exit("PROGRAM ENDED!")
-        
-    
+else:
+    subprocess.Popen('python ' + filename, shell=True).wait()
                 
