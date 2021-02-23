@@ -3,6 +3,7 @@ from selenium import common
 from selenium.webdriver.common import keys #pip install webdriver-manager
 from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
+import keyboard
 import random
 import time
 import os
@@ -175,7 +176,7 @@ class Twitter_Service(object):
     # Search tweets
     def search_tweets(self, browser, keyword):
         try:
-            browser.get('https://twitter.com/hashtag/' + keyword + '?src=hashtag_click')
+            browser.get('https://twitter.com/hashtag/' + keyword + '?src=hashtag_click&f=live')
             return True
 
         except Exception as e:
@@ -185,3 +186,31 @@ class Twitter_Service(object):
             browser.close()
             time.sleep(2)
             subprocess.Popen('python ' + filename, shell=True).wait()
+
+    # Like/Retweet tweets
+    def like_tweets(self, browser, count=10):
+        keyboard.press_and_release('left alt + tab')
+        keyboard.press_and_release('right arrow')
+        keyboard.send('enter')
+        
+        for i in range(count):
+            try:
+                keyboard.send('j')
+                time.sleep(0.5)
+                
+                keyboard.send('l')
+                time.sleep(0.5)
+            
+                keyboard.send('t')
+                time.sleep(0.5)
+                
+                keyboard.send('enter')
+                time.sleep(2)
+            
+            except Exception as e:
+                print("EXCEPTION - LIKE/RETWEET TWEETS. RESTARTING!")
+                print(e)
+                time.sleep(2)
+                browser.close()
+                time.sleep(2)
+                subprocess.Popen('python ' + filename, shell=True).wait()

@@ -10,48 +10,68 @@ import configurations
 twitterService = Twitter_Service()
 filename = configurations.init_file
 
-check_data_response = twitterService.read_file(configurations.hashtagged_tweets_file)
-data_exists = check_data_response['have_data']
+# Initiate Browser
+browser = twitterService.initiate_browser()
 
-if data_exists:
-    # Initiate Browser
-    browser = twitterService.initiate_browser()
+# Open Twitter Website
+twitterService.open_twitter(browser)
 
-    # Open Twitter Website
-    twitterService.open_twitter(browser)
+# Fill credentials and login
+twitterService.login(browser)
 
-    # Fill credentials and login
-    twitterService.login(browser)
+action = input("Enter action: Tweet (T) or Like & Retweet (L)? ")
 
-    have_hashtagged_tweets = True
+if action.lower() == "t":
+    check_data_response = twitterService.read_file(configurations.hashtagged_tweets_file)
+    data_exists = check_data_response['have_data']
 
-    while (have_hashtagged_tweets):
-        read_hashtagged_tweets_response = twitterService.read_file(configurations.hashtagged_tweets_file)
-        have_hashtagged_tweets = read_hashtagged_tweets_response['have_data']
+    if data_exists:
+        have_hashtagged_tweets = True
+
+        while (have_hashtagged_tweets):
+            read_hashtagged_tweets_response = twitterService.read_file(configurations.hashtagged_tweets_file)
+            have_hashtagged_tweets = read_hashtagged_tweets_response['have_data']
             
-        if have_hashtagged_tweets:
-            hashtagged_tweets = read_hashtagged_tweets_response['data']
-            twitterService.post_tweets(browser, hashtagged_tweets)
+            if have_hashtagged_tweets:
+                hashtagged_tweets = read_hashtagged_tweets_response['data']
+                twitterService.post_tweets(browser, hashtagged_tweets)
                 
-            hashtagged_tweets = hashtagged_tweets[1:]
+                hashtagged_tweets = hashtagged_tweets[1:]
                 
-            for i, tweet in enumerate(hashtagged_tweets):
-                tweet = tweet.strip("\n")
-                hashtagged_tweets[i] = tweet
+                for i, tweet in enumerate(hashtagged_tweets):
+                    tweet = tweet.strip("\n")
+                    hashtagged_tweets[i] = tweet
                 
-            twitterService.write_file(configurations.hashtagged_tweets_file, hashtagged_tweets)
+                twitterService.write_file(configurations.hashtagged_tweets_file, hashtagged_tweets)
                 
-            time.sleep(configurations.tweet_frequency)
+                time.sleep(configurations.tweet_frequency)
 
-        else:
-            print("MISSION PASSED! RESPECT +")
-            playsound(configurations.music_file)
-            time.sleep(1)
+            else:
+                print("MISSION PASSED! RESPECT +")
+                playsound(configurations.music_file)
+                time.sleep(1)
                 
-            twitterService.logout(browser)
-            browser.close()
-            sys.exit("PROGRAM ENDED!")
+                twitterService.logout(browser)
+                browser.close()
+                sys.exit("PROGRAM ENDED!")
 
-else:
-    subprocess.Popen('python ' + filename, shell=True).wait()
+    else:
+        subprocess.Popen('python ' + filename, shell=True).wait()
+
+elif action.lower() == "l":
+    query = input("Please enter the hashtag for the tweets you want to search (Case Sensitive): ")
+    search_successful = twitterService.search_tweets(browser, query)
+    
+    if search_successful:
+        count = input("How many tweets you want to like/retweet? ")
+        twitterService.like_tweets(browser, int(count))
+
+    print("MISSION PASSED! RESPECT +")
+    playsound(configurations.music_file)
+    time.sleep(1)
+                
+    twitterService.logout(browser)
+    browser.close()
+    sys.exit("PROGRAM ENDED!")
+
                 
